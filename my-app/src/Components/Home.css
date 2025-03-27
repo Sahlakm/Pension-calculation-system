@@ -1,0 +1,13 @@
+.padding {
+    align-items: center;
+    justify-items: center;
+}
+
+.btn-container{
+    margin: 5px;
+}
+
+.btns-container {
+    justify-items: center;
+    display: inline-block;
+}
