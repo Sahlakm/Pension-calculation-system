@@ -9,12 +9,12 @@ const PensionerSchema = new mongoose.Schema(
         name: trimString,
         pension_rule: {
             type: String,
-            enum: [
-                "SIXTH PAY NON-TEACHING STAFF (STATE)",
-                "SEVENTH PAY NON-TEACHING STAFF (STATE)",
-                "SIXTH PAY TEACHING STAFF",
-                "SEVENTH PAY TEACHING STAFF (CENTRAL)",
-            ],
+            // enum: [
+            //     "SIXTH PAY NON-TEACHING STAFF (STATE)",
+            //     "SEVENTH PAY NON-TEACHING STAFF (STATE)",
+            //     "SIXTH PAY TEACHING STAFF",
+            //     "SEVENTH PAY TEACHING STAFF (CENTRAL)",
+            // ],
             trim: true,
         }, // Add valid rules here
         pension_status: {

@@ -27,6 +27,7 @@ try {
     password,
      
   });
+  console.log("here",response);
   setMessage({ type: 'success', text: response.data.message });
     navigate('/');
     window.location.reload();

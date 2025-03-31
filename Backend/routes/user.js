@@ -52,10 +52,10 @@ router.post("/signup", async (req, res) => {
 // User signin route
 router.post("/signin", async (req, res) => {
   const { email, password } = req.body;
-
   try {
     const token = await user.matchpasswordandreturntoken(email, password);
     res.cookie("uid", token);
+    // console.log(email,password);
     return res.redirect("/");
   } catch (error) {
     console.error("Error during signin:", error);

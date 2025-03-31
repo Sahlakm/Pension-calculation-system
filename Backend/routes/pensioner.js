@@ -2,7 +2,125 @@ const express = require("express");
 const router = express.Router();
 const Pensioner = require("../models/pensioner");
 const { PensionDetails } = require("../models/pension");
-console.log(PensionDetails);
+// console.log(PensionDetails);
+
+
+// Fetch employee details by PPoNo
+router.get("/employees/:PPoNo", async (req, res) => {
+  try {
+    const { PPoNo } = req.params;
+    const employee = await Pensioner.findOne({ PPoNo });
+
+    if (!employee) {
+      return res.status(404).json({ message: "Employee not found" });
+    }
+
+    res.json(employee);
+  } catch (error) {
+    console.error("Error fetching employee details:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+router.get("/pension/:PPoNo", async (req, res) => {
+  try {
+    const { PPoNo } = req.params;
+    const pension = await PensionDetails.findOne({ PPoNo });
+
+    if (!pension) {
+      return res.status(404).json({ message: "Employee not found" });
+    }
+
+    res.json(pension);
+  } catch (error) {
+    console.error("Error fetching employee details:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+router.delete('/employees/:PPoNo', async (req, res) => {
+  try {
+    const { ppoNo } = req.params;
+    
+    const deletedEmployee = await Pensioner.findOneAndDelete({ ppoNo });
+
+    if (!deletedEmployee) {
+      return res.status(404).json({ message: "Employee not found" });
+    }
+
+    res.json({ message: "Employee deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting employee:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+router.delete('/pension/:PPoNo', async (req, res) => {
+  try {
+    const { ppoNo } = req.params;
+    
+    const deletedPension = await PensionDetails.findOneAndDelete({ ppoNo });
+
+    if (!deletedPension) {
+      return res.status(404).json({ message: "Pension details not found" });
+    }
+
+    res.json({ message: "Pension details deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting pension details:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
+router.put('/employees/:PPoNo', async (req, res) => {
+  try {
+    const { PPoNo } = req.params;
+    const updateData = req.body; // Updated fields sent from frontend
+
+    const updatedEmployee = await Pensioner.findOneAndUpdate(
+      { PPoNo }, 
+      updateData, 
+      { new: true } // Return updated document
+    );
+
+    if (!updatedEmployee) {
+      return res.status(404).json({ message: "Employee not found" });
+    }
+
+    res.json({ message: "Employee updated successfully", updatedEmployee });
+  } catch (error) {
+    console.error("Error updating employee:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
+router.put('/pension/:PPoNo', async (req, res) => {
+  try {
+    const { PPoNo } = req.params;
+    const updateData = req.body;
+
+    const updatedPension = await PensionDetails.findOneAndUpdate(
+      { PPoNo }, 
+      updateData, 
+      { new: true } // Return updated document
+    );
+
+    if (!updatedPension) {
+      return res.status(404).json({ message: "Pension details not found" });
+    }
+
+    res.json({ message: "Pension details updated successfully", updatedPension });
+  } catch (error) {
+    console.error("Error updating pension details:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
+
+
 
 // Route to add a new pensioner with pension details
 router.post("/add-employee", async (req, res) => {
@@ -60,7 +178,6 @@ router.post("/add-employee", async (req, res) => {
 // POST route to add pension details
 router.post("/add-pension-details", async (req, res) => {
   try {
-    console.log("response", req.body);
     const {
       PPoNo,
       basic,
@@ -113,9 +230,15 @@ router.post("/add-pension-details", async (req, res) => {
 
 module.exports = router;
 
+router.get('/:ppoNumber', async (req, res) => {
+  try {
+    const employee = await Employee.findOne({ 'employee.PPoNo': req.params.ppoNumber });
+    if (!employee) {
+      return res.status(404).json({ message: 'Employee not found' });
+    }
+    res.json(employee);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
-
-
-
-
-module.exports = router;

@@ -2,7 +2,7 @@ const {getUser}=require("../services/user");
 const Userdata=require("../models/user")
 
 async function auth(req,res,next){
-    
+    // console.log("Entered");
     const token=req.cookies?.uid;
     
     req.user=null;

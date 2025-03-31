@@ -10,6 +10,8 @@ const bodyParser = require('body-parser');
 const authRoutes=require("./routes/authroute");
 const Pensioner=require("./routes/pensioner")
 const userroute=require("./routes/user");
+const ruleRoutes = require('./routes/rule');
+
 
 
 // const auth=require("./middleware/authenticate");
@@ -26,8 +28,8 @@ mongoose.connect("mongodb://127.0.0.1:27017/PMS")
 
 app.use(cors());
 app.use(cookieParser());
-app.use(express.json());
-app.use(express.urlencoded({extended:true}));
+app.use(express.json({ limit: '10mb' }));  // Increase limit for JSON payloads
+app.use(express.urlencoded({ limit: '10mb', extended: true })); // Increase limit for URL-encoded form data
 app.use(express.static(path.resolve("./public")));
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
@@ -36,7 +38,7 @@ app.use("/auth",authRoutes );
 // app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use("/user",userroute);
 app.use("/api",Pensioner);
-
+app.use('/rules', ruleRoutes);
 // app.use("/api",apiroute);
 
 app.listen(PORT, () => {
