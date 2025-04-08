@@ -1,0 +1,70 @@
+.pension-container {
+    padding: 20px;
+    font-family: sans-serif;
+  }
+  
+  .pension-container h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .filter-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: flex-end;
+    margin-bottom: 20px;
+  }
+  
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .filter-group label {
+    margin-bottom: 5px;
+    font-size: 14px;
+  }
+  
+  .filter-controls input,
+  .filter-controls select {
+    padding: 6px 10px;
+    font-size: 14px;
+  }
+  
+  .filter-controls button {
+    padding: 6px 16px;
+    font-size: 14px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .pension-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .pension-table th,
+  .pension-table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .pension-table th {
+    background-color: #f1f1f1;
+  }
+  
+  .action-icons {
+    display: flex;
+    gap: 10px;
+    color: blue;
+  }
+  
+  .delete-icon {
+    color: red;
+    cursor: pointer;
+  }
+  

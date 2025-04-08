@@ -16,10 +16,13 @@
   "dependencies": {
  
    
+  "latest-version": "^9.0.0",
+ 
+   
   "multer": "^1.4.5-lts.1",
  
    
-  "node": "^20.19.0",
+  "node": "^23.11.0",
  
    
   "nodemon": "^3.1.9"

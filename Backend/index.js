@@ -8,10 +8,10 @@ const path=require("path");
 const cookieParser = require("cookie-parser");
 const bodyParser = require('body-parser');
 const authRoutes=require("./routes/authroute");
-const Pensioner=require("./routes/pensioner")
+const Pensioner=require("./routes/pensioner ")
 const userroute=require("./routes/user");
 const ruleRoutes = require('./routes/rule');
-
+const snapshotVivewRoutes = require("./routes/snapshotViewRoute");
 
 
 // const auth=require("./middleware/authenticate");
@@ -40,6 +40,7 @@ app.use("/user",userroute);
 app.use("/api",Pensioner);
 app.use('/rules', ruleRoutes);
 // app.use("/api",apiroute);
+app.use("/snapshot", snapshotVivewRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

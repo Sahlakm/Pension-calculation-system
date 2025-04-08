@@ -29,17 +29,11 @@ const PensionerForm = () => {
     },
     pension: {
       PPoNo: "",
-      basic: "",
-      dp_a: "",
       medi_allowance: "",
       other_allowance: "",
       other_deduction: "",
       income_tax: "",
-      dr: "",
-      total: "",
       reduced_pension: "",
-      total_pension: "",
-      net_pay: "",
     }
   });
 
@@ -48,6 +42,7 @@ const PensionerForm = () => {
   const [error, setError] = useState(null);
   const [searchPPONo, setSearchPPONo] = useState("");
   const [isEditing, setIsEditing] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fetch pension rules from backend
   useEffect(() => {
@@ -75,70 +70,104 @@ const PensionerForm = () => {
     return date.toISOString().split('T')[0];
   };
   
-  // In your handleSearch function:
   const handleSearch = async (e) => {
     e.preventDefault();
+    if (!searchPPONo) {
+      alert("Please enter a PPO Number");
+      return;
+    }
+
     try {
-      const response = await axios.get(`/api/employees/${searchPPONo}`);
-      const response1 = await axios.get(`/api/pension/${searchPPONo}`);
+      setLoading(true);
+      const [employeeResponse, pensionResponse] = await Promise.all([
+        axios.get(`/api/employees/${searchPPONo}`),
+        axios.get(`/api/pension/${searchPPONo}`)
+      ]);
       
       // Format dates before setting state
       const formattedEmployeeData = {
-        ...response.data,
-        date_of_birth: formatDateForInput(response.data.date_of_birth),
-        date_of_joining: formatDateForInput(response.data.date_of_joining),
-        date_of_retirement: formatDateForInput(response.data.date_of_retirement)
+        ...employeeResponse.data,
+        date_of_birth: formatDateForInput(employeeResponse.data.date_of_birth),
+        date_of_joining: formatDateForInput(employeeResponse.data.date_of_joining),
+        date_of_retirement: formatDateForInput(employeeResponse.data.date_of_retirement)
       };
   
       setFormData(prev => ({
         ...prev,
         employee: formattedEmployeeData,
-        pension: response1.data,
+        pension: pensionResponse.data,
       }));
   
       setIsEditing(true);
-      alert("Employee found. You can now edit the details.");
     } catch (error) {
       console.error("Error searching employee:", error);
       alert("Employee not found or error fetching data.");
+    } finally {
+      setLoading(false);
     }
   };
   
   const handleChange = (e) => {
     const { name, value } = e.target;
-  
-    setFormData((prev) => ({
-      ...prev,
-      employee: {
-        ...prev.employee,
-        [name]: prev.employee.hasOwnProperty(name) ? value : prev.employee[name] ?? prev.employee,
-        address: {
-          ...prev.employee.address,
-          [name]: prev.employee.address?.hasOwnProperty(name) ? value : prev.employee.address,
-        },
-        bank: {
-          ...prev.employee.bank,
-          [name]: prev.employee.bank?.hasOwnProperty(name) ? value : prev.employee.bank,
-        },
-      },
-      pension: {
-        ...prev.pension,
-        [name]: prev.pension.hasOwnProperty(name) ? value : prev.pension,
-      },
-    }));
+    
+    // Handle nested objects (address and bank)
+    if (name.startsWith('address.')) {
+      const field = name.split('.')[1];
+      setFormData(prev => ({
+        ...prev,
+        employee: {
+          ...prev.employee,
+          address: {
+            ...prev.employee.address,
+            [field]: value
+          }
+        }
+      }));
+    } 
+    else if (name.startsWith('bank.')) {
+      const field = name.split('.')[1];
+      setFormData(prev => ({
+        ...prev,
+        employee: {
+          ...prev.employee,
+          bank: {
+            ...prev.employee.bank,
+            [field]: value
+          }
+        }
+      }));
+    }
+    else if (name in formData.employee) {
+      setFormData(prev => ({
+        ...prev,
+        employee: {
+          ...prev.employee,
+          [name]: value
+        }
+      }));
+    }
+    else if (name in formData.pension) {
+      setFormData(prev => ({
+        ...prev,
+        pension: {
+          ...prev.pension,
+          [name]: value
+        }
+      }));
+    }
   };
-  
+
   // Submit Employee Details
   const handleEmployeeSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    
     try {
       if (isEditing) {
-        // Update existing employee
         await axios.put(`/api/employees/${formData.employee.PPoNo}`, formData.employee);
-        setFormData(resetFormData());
         alert("Employee details updated successfully!");
       } else {
-        // Create new employee
+        console.log("formdata ",formData);
         await axios.post("/api/add-employee", formData.employee);
         alert("Employee details submitted successfully!");
       }
@@ -156,24 +185,32 @@ const PensionerForm = () => {
     } catch (error) {
       console.error("Error submitting employee details:", error);
       alert(`Failed to ${isEditing ? 'update' : 'submit'} employee details.`);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   // Submit Pension Details
   const handlePensionSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    
     try {
       if (isEditing) {
         await axios.put(`/api/pension/${formData.pension.PPoNo}`, formData.pension);
-        setFormData(resetFormData());
         alert("Pension details updated successfully!");
       } else {
+        formData.pension.PPoNo = formData.employee.PPoNo;
+        console.log(formData.pension);
+        // Ensure PPoNo is set
         await axios.post("/api/add-pension-details", formData.pension);
         alert("Pension details submitted successfully!");
       }
     } catch (error) {
       console.error("Error submitting pension details:", error);
       alert(`Failed to ${isEditing ? 'update' : 'submit'} pension details.`);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -211,33 +248,23 @@ const PensionerForm = () => {
       },
       pension: {
         PPoNo: "",
-        basic: "",
-        dp_a: "",
         medi_allowance: "",
         other_allowance: "",
-        other_deduction: "",
+        other_deduction:"",
         income_tax: "",
-        dr: "",
-        total: "",
         reduced_pension: "",
-        total_pension: "",
-        net_pay: "",
       }
     };
   };
 
-
-
-  // Handle delete
   const handleDelete = async () => {
     if (!window.confirm(`Are you sure you want to delete employee with PPO Number: ${formData.employee.PPoNo}?`)) {
       return;
     }
 
     try {
-      // console.log("form data",formData);
       await axios.delete(`/api/employees/${formData.employee.PPoNo}`);
-      await axios.delete(`api/pension/${formData.employee.PPoNo}`);
+      await axios.delete(`/api/pension/${formData.employee.PPoNo}`);
       alert("Employee deleted successfully!");
       setFormData(resetFormData());
       setIsEditing(false);
@@ -269,10 +296,13 @@ const PensionerForm = () => {
             placeholder="Enter PPO Number"
             value={searchPPONo}
             onChange={(e) => setSearchPPONo(e.target.value)}
+            required
           />
-          <button onClick={handleSearch}>Search</button>
+          <button onClick={handleSearch} disabled={loading}>
+            {loading ? "Searching..." : "Search"}
+          </button>
           {isEditing && (
-            <button className="delete-btn" onClick={handleDelete}>
+            <button className="delete-btn" onClick={handleDelete} disabled={isSubmitting}>
               Delete
             </button>
           )}
@@ -290,7 +320,7 @@ const PensionerForm = () => {
             value={formData.employee.PPoNo} 
             onChange={handleChange} 
             required 
-            readOnly={isEditing} // PPO number shouldn't be editable when editing
+            readOnly={isEditing}
           />
 
           <label>Name:</label>
@@ -317,15 +347,18 @@ const PensionerForm = () => {
             ))}
           </select>
 
-          {/* Rest of your form fields... */}
           <label>Pension status:</label>
-          <select name="pension_status" value={formData.pension.pension_status} onChange={handleChange}>
-  <option value="">Select Pension Status</option>
-  <option value="SERVICE PENSION">Service Pension</option>
-  <option value="FAMILY PENSION">Family Pension</option>
-  <option value="LEGAL HEIR">Legal Heir</option>
-</select>
-
+          <select 
+            name="pension_status" 
+            value={formData.employee.pension_status} 
+            onChange={handleChange}
+            required
+          >
+            <option value="">Select Pension Status</option>
+            <option value="SERVICE PENSION">Service Pension</option>
+            <option value="FAMILY PENSION">Family Pension</option>
+            <option value="LEGAL HEIR">Legal Heir</option>
+          </select>
           
           <label>Email:</label>
           <input 
@@ -338,20 +371,22 @@ const PensionerForm = () => {
 
           <label>Phone Number:</label>
           <input 
-            type="text" 
+            type="tel" 
             name="phone_number" 
             value={formData.employee.phone_number} 
             onChange={handleChange} 
             required 
+            pattern="[0-9]{10}"
           />
 
-          <label>Adhaar Number:</label>
+          <label>Aadhaar Number:</label>
           <input 
             type="text" 
             name="adhaar_number" 
             value={formData.employee.adhaar_number} 
             onChange={handleChange} 
             required 
+            pattern="[0-9]{12}"
           />
           
           <label>Date of Birth:</label>
@@ -361,6 +396,7 @@ const PensionerForm = () => {
             value={formData.employee.date_of_birth} 
             onChange={handleChange} 
             required 
+            max={new Date().toISOString().split('T')[0]}
           />
 
           <label>Date of Joining:</label>
@@ -385,7 +421,7 @@ const PensionerForm = () => {
           <label>Line 1:</label>
           <input 
             type="text" 
-            name="line1" 
+            name="address.line1" 
             value={formData.employee.address.line1} 
             onChange={handleChange} 
             required 
@@ -394,7 +430,7 @@ const PensionerForm = () => {
           <label>Line 2:</label>
           <input 
             type="text" 
-            name="line2" 
+            name="address.line2" 
             value={formData.employee.address.line2} 
             onChange={handleChange} 
           />
@@ -402,17 +438,18 @@ const PensionerForm = () => {
           <label>Pincode:</label>
           <input 
             type="text" 
-            name="pincode" 
+            name="address.pincode" 
             value={formData.employee.address.pincode} 
             onChange={handleChange} 
             required 
+            pattern="[0-9]{6}"
           />
 
           <h4>Bank Account Details</h4>
           <label>Account Number:</label>
           <input 
-            type="number" 
-            name="account_number" 
+            type="text" 
+            name="bank.account_number" 
             value={formData.employee.bank.account_number} 
             onChange={handleChange} 
             required 
@@ -421,7 +458,7 @@ const PensionerForm = () => {
           <label>IFSC Code:</label>
           <input 
             type="text" 
-            name="ifsc_code" 
+            name="bank.ifsc_code" 
             value={formData.employee.bank.ifsc_code} 
             onChange={handleChange} 
             required 
@@ -430,7 +467,7 @@ const PensionerForm = () => {
           <label>Bank Address:</label>
           <input 
             type="text" 
-            name="address" 
+            name="bank.address" 
             value={formData.employee.bank.address} 
             onChange={handleChange} 
             required 
@@ -450,46 +487,55 @@ const PensionerForm = () => {
             readOnly={isEditing}
           />
 
-           <label>Basic:</label>
-          <input 
-            type="number" 
-            name="basic" 
-            value={formData.pension.basic} 
-            onChange={handleChange} 
-            required 
-          />
-
           <label>Medical Allowance:</label>
           <input 
             type="number" 
             name="medi_allowance" 
             value={formData.pension.medi_allowance} 
             onChange={handleChange} 
-            required 
+            min="0"
           />
 
-          <label>Total Pension:</label>
+          <label>Other Allowance:</label>
           <input 
             type="number" 
-            name="total_pension" 
-            value={formData.pension.total_pension} 
+            name="other_allowance" 
+            value={formData.pension.other_allowance} 
             onChange={handleChange} 
-            required 
+            min="0"
           />
 
-          <label>Net Pay:</label>
+          <label>Other Deduction:</label>
           <input 
             type="number" 
-            name="net_pay" 
-            value={formData.pension.net_pay} 
+            name="other_deduction" 
+            value={formData.pension.other_deduction} 
             onChange={handleChange} 
-            required 
+            min="0"
+          />
+
+          <label>Income Tax:</label>
+          <input 
+            type="number" 
+            name="income_tax" 
+            value={formData.pension.income_tax} 
+            onChange={handleChange} 
+            min="0"
+          />
+
+          <label>Reduced Pension:</label>
+          <input 
+            type="number" 
+            name="reduced_pension" 
+            value={formData.pension.reduced_pension} 
+            onChange={handleChange} 
+            min="0"
           />
         </div>
 
         <div className="button-group">
-          <button type="submit">
-            {isEditing ? "Update" : "Save"}
+          <button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Processing..." : isEditing ? "Update" : "Save"}
           </button>
           {isEditing && (
             <button 
@@ -499,6 +545,7 @@ const PensionerForm = () => {
                 setFormData(resetFormData());
                 setSearchPPONo("");
               }}
+              disabled={isSubmitting}
             >
               Cancel Edit
             </button>

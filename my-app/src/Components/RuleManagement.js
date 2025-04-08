@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import './RuleManagement.css';
 
 const RuleManagement = () => {
@@ -8,14 +8,21 @@ const RuleManagement = () => {
     const [editingRule, setEditingRule] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
-    const { register, handleSubmit, reset, setValue } = useForm();
+    const { register, handleSubmit, reset, setValue, control } = useForm({
+        defaultValues: {
+            parameters: [{ key: '', value: '' }]
+        }
+    });
 
-    // Fetch all rules
+    const { fields, append, remove } = useFieldArray({
+        control,
+        name: 'parameters',
+    });
+
     useEffect(() => {
         const fetchRules = async () => {
             setIsLoading(true);
             try {
-                console.log("going to rules");
                 const response = await axios.get('/rules');
                 setRules(response.data);
             } catch (err) {
@@ -28,19 +35,32 @@ const RuleManagement = () => {
         fetchRules();
     }, []);
 
-    // Handle form submission (create/update)
     const onSubmit = async (data) => {
+        const formattedParameters = {};
+        data.parameters.forEach(param => {
+            if (param.key.trim()) {
+                formattedParameters[param.key] = param.value;
+            }
+        });
+
+        const payload = {
+            ruleName: data.ruleName,
+            description: data.description,
+            isActive: data.isActive || false,
+            basic_pension: Number(data.basic_pension),
+            dp_a: Number(data.dp_a),
+            parameters: formattedParameters,
+        };
+
         try {
             let response;
             if (editingRule) {
-                // Update existing rule
-                response = await axios.put(`/rules/${editingRule._id}`, data);
-                setRules(rules.map(rule => 
+                response = await axios.put(`/rules/${editingRule._id}`, payload);
+                setRules(rules.map(rule =>
                     rule._id === editingRule._id ? response.data : rule
                 ));
             } else {
-                // Create new rule
-                response = await axios.post('/rules', data);
+                response = await axios.post('/rules', payload);
                 setRules([response.data, ...rules]);
             }
             resetForm();
@@ -50,16 +70,18 @@ const RuleManagement = () => {
         }
     };
 
-    // Edit a rule
     const handleEdit = (rule) => {
         setEditingRule(rule);
         setValue('ruleName', rule.ruleName);
         setValue('description', rule.description);
         setValue('isActive', rule.isActive);
-        // Set other fields as needed
+        setValue('basic_pension', rule.basic_pension);
+        setValue('dp_a', rule.dp_a);
+
+        const paramFields = Object.entries(rule.parameters || {}).map(([key, value]) => ({ key, value }));
+        reset({ ...rule, parameters: paramFields.length ? paramFields : [{ key: '', value: '' }] });
     };
 
-    // Delete a rule
     const handleDelete = async (id) => {
         if (window.confirm('Are you sure you want to delete this rule?')) {
             try {
@@ -75,9 +97,15 @@ const RuleManagement = () => {
         }
     };
 
-    // Reset form
     const resetForm = () => {
-        reset();
+        reset({
+            ruleName: '',
+            description: '',
+            isActive: false,
+            basic_pension: 0,
+            dp_a: 0,
+            parameters: [{ key: '', value: '' }]
+        });
         setEditingRule(null);
         setError('');
     };
@@ -85,38 +113,75 @@ const RuleManagement = () => {
     return (
         <div className="rule-management">
             <h2>Rule Management</h2>
-            
-            {/* Rule Form */}
+
             <div className="rule-form">
                 <h3>{editingRule ? 'Edit Rule' : 'Add New Rule'}</h3>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="form-group">
                         <label>Rule Name</label>
-                        <input 
+                        <input
                             {...register('ruleName', { required: 'Rule name is required' })}
-                            type="text" 
+                            type="text"
                         />
                     </div>
-                    
+
                     <div className="form-group">
                         <label>Description</label>
-                        <textarea 
+                        <textarea
                             {...register('description')}
                             rows="3"
                         />
                     </div>
-                    
+
+                    <div className="form-group">
+                        <label>Basic Pension</label>
+                        <input
+                            {...register('basic_pension', { required: true })}
+                            type="number"
+                            step="0.01"
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label>DP A</label>
+                        <input
+                            {...register('dp_a', { required: true })}
+                            type="number"
+                            step="0.01"
+                        />
+                    </div>
+
                     <div className="form-group checkbox">
                         <label>
-                            <input 
+                            <input
                                 {...register('isActive')}
-                                type="checkbox" 
+                                type="checkbox"
                             /> Active
                         </label>
                     </div>
-                    
-                    {/* Add more fields for parameters as needed */}
-                    
+
+                    <div className="form-group">
+                        <label>Parameters</label>
+                        {fields.map((field, index) => (
+                            <div key={field.id} className="param-row">
+                                <input
+                                    placeholder="Key"
+                                    {...register(`parameters.${index}.key`)}
+                                    type="text"
+                                />
+                                <input
+                                    placeholder="Value"
+                                    {...register(`parameters.${index}.value`)}
+                                    type="text"
+                                />
+                                <button type="button" onClick={() => remove(index)}>Remove</button>
+                            </div>
+                        ))}
+                        <button type="button" onClick={() => append({ key: '', value: '' })}>
+                            Add Parameter
+                        </button>
+                    </div>
+
                     <div className="form-actions">
                         <button type="submit" className="btn-primary">
                             {editingRule ? 'Update Rule' : 'Add Rule'}
@@ -130,8 +195,7 @@ const RuleManagement = () => {
                 </form>
                 {error && <div className="error-message">{error}</div>}
             </div>
-            
-            {/* Rules List */}
+
             <div className="rules-list">
                 <h3>Existing Rules</h3>
                 {isLoading ? (
@@ -144,6 +208,8 @@ const RuleManagement = () => {
                             <tr>
                                 <th>Rule Name</th>
                                 <th>Description</th>
+                                <th>Basic Pension</th>
+                                <th>DP A</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
@@ -153,22 +219,18 @@ const RuleManagement = () => {
                                 <tr key={rule._id}>
                                     <td>{rule.ruleName}</td>
                                     <td>{rule.description || '-'}</td>
+                                    <td>{rule.basic_pension}</td>
+                                    <td>{rule.dp_a}</td>
                                     <td>
                                         <span className={`status ${rule.isActive ? 'active' : 'inactive'}`}>
                                             {rule.isActive ? 'Active' : 'Inactive'}
                                         </span>
                                     </td>
                                     <td>
-                                        <button 
-                                            onClick={() => handleEdit(rule)}
-                                            className="btn-edit"
-                                        >
+                                        <button onClick={() => handleEdit(rule)} className="btn-edit">
                                             Edit
                                         </button>
-                                        <button 
-                                            onClick={() => handleDelete(rule._id)}
-                                            className="btn-delete"
-                                        >
+                                        <button onClick={() => handleDelete(rule._id)} className="btn-delete">
                                             Delete
                                         </button>
                                     </td>
