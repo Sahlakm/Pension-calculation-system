@@ -1,3 +1,13 @@
+.form-table {
+    width: 100%;
+}
+
+.form-table  td {
+    margin-right: 32px;
+    padding-right: 32px;
+}
+
+
 .rule-management {
     max-width: 1200px;
     margin: 0 auto;
@@ -27,6 +37,7 @@
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
+    margin-bottom: 4px;
 }
 
 .form-group.checkbox {
