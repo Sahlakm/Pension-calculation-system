@@ -25,25 +25,26 @@ const Home = ({ user }) => {
             onClick={() => navigate("/add-employee")}
             className="p-3 bg-green-500 text-white rounded-lg btn-container"
           >
-            Enter New Pensioner Details
+            {/* Enter New Pensioner Details */}
+            ⭐ Pensioner, Pension and Tax Details
           </button>
-          <button
+          {/* <button
             className="p-3 bg-green-500 text-white rounded-lg btn-container"
             onClick={() => alert("Yet to be implemented ...")}
           >
             Update Tax / Deductions
-          </button>
+          </button> */}
           <button
             className="p-3 bg-green-500 text-white rounded-lg btn-container"
             onClick={() => alert("Yet to be implemented ...")}
           >
-            Generate Reports
+            📜 Generate Reports
           </button>
           <button
             onClick={() => navigate("/rules")}
             className="p-3 bg-green-500 text-white rounded-lg btn-container"
           >
-            Add/Edit Rules
+            ✏️ Add/Edit Rules
           </button>
         </div>
       ) : (
