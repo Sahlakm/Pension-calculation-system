@@ -153,10 +153,10 @@ const RuleManagement = () => {
 						<label>Employment Type</label>
 						<select
 							{...register("employmentType")}
-							defaultValue='TEACHING'
+							defaultValue='Teaching'
 							className='form-control'>
-							<option value='TEACHING'>TEACHING</option>
-							<option value='NON_TEACHING'>NON TEACHING</option>
+							<option value='Teaching'>TEACHING</option>
+							<option value='Non-Teaching'>NON TEACHING</option>
 						</select>
 					</div>
 

@@ -153,6 +153,7 @@ function createPensionerFullView(db) {
 							employment_type: "$rule.employmentType",
 							bank: "$pensioner.bank",
 							address: "$pensioner.address",
+							email: "$pension.email",
 							basic_pension: 1,
 							dp_a: 1,
 							total: 1,
