@@ -44,7 +44,6 @@ router.get("/take_daily_snapshot", (req, res) => {
 		.then((result) => res.send(result))
 		.catch((err) => {
 			console.error("Error creating daily snapshot:", err);
-			console.log('Snapshot might exist ?')
 			res.status(500).json({ error: err.message });
 		});
 });
@@ -81,8 +80,8 @@ router.get("/monthly_snapshot_:mon_year", (req, res) => {
 		});
 });
 
-router.get("/monthly_snapshot/:ppono", async (req, res) => {
-	const { ppono } = req.params;
+router.get("/monthly_snapshot/:email", async (req, res) => {
+	const { email } = req.params;
 	const db = mongoose.connection.db;
 
 	try {
@@ -91,7 +90,7 @@ router.get("/monthly_snapshot/:ppono", async (req, res) => {
 		// Filter collections with snapshot naming pattern
 		const snapshotCollections = collections
 			.map((col) => col.name)
-			.filter((name) => /^[a-z]{3}_\d{4}$/.test(name));
+			.filter((name) => /^[a-z]{3}_\d{4}$/.test(email));
 
 		const results = [];
 
@@ -143,7 +142,7 @@ router.get("/monthly_snapshot/:ppono", async (req, res) => {
 router.get("/daily_snapshot_:date", (req, res) => {
 	const { date } = req.params; // expected format: dd_mm_yyyy
 	console.log(date);
-	const { pension_rule, pension_status } = req.query;
+	const { pension_rule, pension_status, employment_type } = req.query;
 
 	console.log("Params:", req.params, "Query:", req.query);
 
@@ -152,6 +151,7 @@ router.get("/daily_snapshot_:date", (req, res) => {
 
 	if (pension_rule) filter.pension_rule = pension_rule;
 	if (pension_status) filter.pension_status = pension_status;
+	if (employment_type) filter.employmentType = employment_type;
 
 	mongoose.connection.db
 		.collection(snapshotName)
@@ -169,9 +169,9 @@ router.get("/daily_snapshot_:date", (req, res) => {
 		});
 });
 
-router.get("/daily_snapshot/:ppono", async (req, res) => {
-	const { ppono } = req.params;
-	console.log(ppono);
+router.get("/daily_snapshot/:email", async (req, res) => {
+	const { email } = req.params;
+	console.log(email);
 	const db = mongoose.connection.db;
 
 	try {
@@ -180,14 +180,15 @@ router.get("/daily_snapshot/:ppono", async (req, res) => {
 		// Match daily snapshots using regex dd_mm_yyyy
 		const snapshotCollections = collections
 			.map((col) => col.name)
-			.filter((name) => /^daily_\d{2}_[a-z]{3}_\d{4}$/.test(name));
+			.filter((email) => /^daily_\d{2}_[a-z]{3}_\d{4}$/.test(email));
 
 		const results = [];
 
 		for (const collName of snapshotCollections) {
 			const collection = db.collection(collName);
 			const entries = await collection
-				.find({ PPoNo: Number(ppono) })
+				// .find({ PPoNo: Number(ppono) })
+				.find({ email })
 				.toArray();
 
 			if (entries.length > 0) {
