@@ -8,7 +8,11 @@ const fs = require('fs'); // Import fs
 
 
 
-
+router.get("/logout", (req, res) => {
+  req.user = null;
+  res.clearCookie("uid");
+  res.status(200).json({ message: "Logged out successfully" });
+});
 
 // User signup route
 router.post("/signup", async (req, res) => {
