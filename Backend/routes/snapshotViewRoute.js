@@ -44,6 +44,7 @@ router.get("/take_daily_snapshot", (req, res) => {
 		.then((result) => res.send(result))
 		.catch((err) => {
 			console.error("Error creating daily snapshot:", err);
+			console.log('Snapshot might exist ?')
 			res.status(500).json({ error: err.message });
 		});
 });

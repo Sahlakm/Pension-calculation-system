@@ -7,6 +7,10 @@ import SignupPage from './Components/Signup';
 import HomePage from './Components/Home';
 import PensionerForm from './Components/Pensionerform';
 import Rules from './Components/RuleManagement';
+import SnapshotManager from './Components/SnapshotManager';
+import Navbar from './Components/Navbar';
+import DrValueForm from './Components/DrValueForm';
+
 function App() {
  
   const [user, setUser] = useState(null);
@@ -34,14 +38,16 @@ function App() {
   return (
     <Router>
       {/* <Navbar user={user}/> */}
+      <Navbar />
       <div className="App">
         <Routes>
           <Route path="/login" element={<><LoginPage /></>} />
           <Route path="/signup" element={<><SignupPage /></>} />
           <Route path="/" element={<><HomePage user={user}/></>} />
           <Route path="/add-employee" element={<><PensionerForm user={user}/></>} /> {/* Pass user as prop */}
-          <Route path="/rules" element={<><Rules user={user}/></>} /> {/* Pass user as prop */}
-       
+          <Route path="/rules" element={<><Rules user={user} /></>} /> {/* Pass user as prop */}
+          <Route path="/snapshot" element={<><SnapshotManager user={user} /></>} />
+          <Route path="/dr-value" element={<><DrValueForm/></> } />
         </Routes>
       </div>
     </Router>
