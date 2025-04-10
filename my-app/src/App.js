@@ -7,6 +7,7 @@ import SignupPage from './Components/Signup';
 import HomePage from './Components/Home';
 import PensionerForm from './Components/Pensionerform';
 import Rules from './Components/RuleManagement';
+import Navbar from './Components/Navbar';
 function App() {
  
   const [user, setUser] = useState(null);
@@ -38,9 +39,9 @@ function App() {
         <Routes>
           <Route path="/login" element={<><LoginPage /></>} />
           <Route path="/signup" element={<><SignupPage /></>} />
-          <Route path="/" element={<><HomePage user={user}/></>} />
-          <Route path="/add-employee" element={<><PensionerForm user={user}/></>} /> {/* Pass user as prop */}
-          <Route path="/rules" element={<><Rules user={user}/></>} /> {/* Pass user as prop */}
+          <Route path="/" element={<><Navbar user={user} /><HomePage user={user}/></>} />
+          <Route path="/add-employee" element={<><Navbar user={user} /><PensionerForm user={user}/></>} /> {/* Pass user as prop */}
+          <Route path="/rules" element={<><Navbar user={user} /><Rules user={user}/></>} /> {/* Pass user as prop */}
        
         </Routes>
       </div>
