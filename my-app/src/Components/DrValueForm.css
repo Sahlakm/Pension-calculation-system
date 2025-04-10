@@ -25,7 +25,7 @@ form div input {
 
  */
 
-form {
+.drform form {
   display: flex;
   flex-direction: column;
   width: 80%;
@@ -34,7 +34,7 @@ form {
   align-items: center;
 }
 
-form button {
+.drform form button {
   align-self: flex-start;
   padding: 8px 12px;
   background-color: #007bff;
@@ -45,18 +45,18 @@ form button {
   margin-top: 10px;
 }
 
-form button:hover {
+.drform form button:hover {
   background-color: #0056b3;
 }
 
-form div select:focus,
-form div input:focus {
+.drform form div select:focus,
+.drform form div input:focus {
   outline: none;
   border-color: #0056b3;
 }
 
 /* Table Styling */
-table {
+.drform table {
   width: 80%;
   border-collapse: collapse;
   margin-left: 10%;
@@ -64,25 +64,25 @@ table {
   margin-top: 20px;
 }
 
-table th, table td {
+.drform table th, .drform table td {
   padding: 12px;
   border: 1px solid #ddd;
   text-align: left;
 }
 
-table th {
+.drform table th {
   background-color: #f4f4f4;
 }
 
-table td {
+.drform table td {
   background-color: #f9f9f9;
 }
 
-table tr:nth-child(even) {
+.drform table tr:nth-child(even) {
   background-color: #f2f2f2;
 }
 
-table td button {
+.drform table td button {
   padding: 5px 10px;
   background-color: #007bff;
   color: white;
@@ -91,12 +91,12 @@ table td button {
   border-radius: 4px;
 }
 
-table td button:hover {
+.drform table td button:hover {
   background-color: #0056b3;
 }
 
 /* Add some spacing between title and form/table */
-h1, h2 {
+.drform h1, .drform h2 {
   text-align: center;
   margin-bottom: 20px;
 }

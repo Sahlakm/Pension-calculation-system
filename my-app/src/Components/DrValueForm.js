@@ -93,7 +93,7 @@ const DrValueForm = () => {
 	};
 
 	return (
-		<div>
+		<div className="drform">
 			<h1>DR Value Form</h1>
 			<form onSubmit={handleSubmit}>
 				<div>

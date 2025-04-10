@@ -8,6 +8,9 @@
 }
 
 .btns-container {
-    justify-items: center;
-    display: inline-block;
+    display: flex;
+    justify-content: center; /* center items horizontally */
+    align-items: center;     /* center items vertically (if needed) */
+    flex-wrap: wrap;         /* allow items to wrap to next line */
+    gap: 10px;               /* optional: space between buttons */
 }

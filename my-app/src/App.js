@@ -36,8 +36,8 @@ function App() {
 
   return (
     <Router>
-      {/* <Navbar user={user}/> */}
-      <Navbar />
+      <Navbar user={user}/>
+      {/* <Navbar /> */}
       <div className="App">
         <Routes>
           <Route path="/login" element={<><LoginPage /></>} />
