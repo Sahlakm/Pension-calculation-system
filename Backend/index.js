@@ -13,8 +13,7 @@ const userroute = require("./routes/user");
 const ruleRoutes = require("./routes/rule");
 const snapshotVivewRoutes = require("./routes/snapshotViewRoute");
 const drRouter = require("./routes/drroute");
-
-// const auth=require("./middleware/authenticate");
+const auth = require("./middleware/authenticate");
 
 app.set("view engine", "ejs");
 app.set("views", path.resolve("./views"));
@@ -22,9 +21,14 @@ app.set("views", path.resolve("./views"));
 const PORT = process.env.PORT || 5001;
 
 mongoose
-	.connect("mongodb://127.0.0.1:27017/PMS")
-	.then(() => console.log("Connected to MongoDB"))
-	.catch((err) => console.error("MongoDB connection error:", err));
+  .connect("mongodb://127.0.0.1:27017/PMS")
+  .then(() => {
+    console.log("Connected to MongoDB");
+    createPensionerFullView(mongoose.connection.db).then((data) =>
+      console.log(data)
+    );
+  })
+  .catch((err) => console.error("MongoDB connection error:", err));
 
 app.use(cors());
 app.use(cookieParser());
@@ -44,5 +48,5 @@ app.use("/snapshot", snapshotVivewRoutes);
 app.use("/drvalues", drRouter);
 
 app.listen(PORT, () => {
-	console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });
