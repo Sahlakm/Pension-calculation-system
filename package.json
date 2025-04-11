@@ -1,103 +1,103 @@
 {
- 
-
-
-
-  "scripts": {
- 
-
-
-
-   
-
-
-
-  "start": "concurrently \"npm run server\" \"npm run client\"",
- 
-
-
-
-   
-
-
-
-  "server": "nodemon Backend/index.js",
- 
-
-
-
-   
-
-
-
-  "client": "npm start --prefix my-app"
- 
-
-
-
-  },
- 
-
-
-
-  "dependencies": {
- 
-
-
-
-   
-
-
-
-  "concurrently": "^9.1.2",
- 
-
-
-
-   
-
-
-
-  "latest-version": "^9.0.0",
- 
-
-
-
-   
-
-
-
-  "multer": "^1.4.5-lts.1",
- 
-
-
-
-   
-
-
-
-  "node": "^23.11.0",
- 
-
-
-
-   
-
-
-
-  "nodemon": "^3.1.9",
- 
-
-
-
-   
-
-
-
-  "react": "^19.1.0"
- 
-
-
-
-  }
+ 
+
+
+
+ "scripts": {
+ 
+
+
+
+  
+
+
+
+ "start": "concurrently \"npm run server\" \"npm run client\"",
+ 
+
+
+
+  
+
+
+
+ "server": "nodemon Backend/index.js",
+ 
+
+
+
+  
+
+
+
+ "client": "npm start --prefix my-app"
+ 
+
+
+
+ },
+ 
+
+
+
+ "dependencies": {
+ 
+
+
+
+  
+
+
+
+ "concurrently": "^9.1.2",
+ 
+
+
+
+  
+
+
+
+ "latest-version": "^9.0.0",
+ 
+
+
+
+  
+
+
+
+ "multer": "^1.4.5-lts.1",
+ 
+
+
+
+  
+
+
+
+ "node": "^23.11.0",
+ 
+
+
+
+  
+
+
+
+ "nodemon": "^3.1.9",
+ 
+
+
+
+  
+
+
+
+ "react": "^19.1.0"
+ 
+
+
+
+ }
 }

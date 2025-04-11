@@ -305,7 +305,7 @@ const PensionerForm = () => {
 	}
 
 	return (
-		<div className='container'>
+		<div className='container pensionform'>
 			<h2>Pension Management System</h2>
 
 			{/* Search Section */}

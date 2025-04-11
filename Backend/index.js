@@ -19,7 +19,7 @@ const drRouter = require("./routes/drroute");
 app.set("view engine", "ejs");
 app.set("views", path.resolve("./views"));
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 mongoose
 	.connect("mongodb://127.0.0.1:27017/PMS")

@@ -27,10 +27,7 @@ const PensionerSchema = new mongoose.Schema(
             enum: ["SERVICE PENSION", "FAMILY PENSION", "LEGAL HEIR"],
             trim: true,
         },
-        email: {
-            type: trimString,
-            required: true
-        },
+        email: trimString,
         phone_number: trimString,
         alternate_phone_number: trimString,
         adhaar_number: trimString,
